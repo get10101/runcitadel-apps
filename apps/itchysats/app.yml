@@ -46,11 +46,22 @@ metadata:
     - 3.jpg
   path: ""
   defaultUsername: itchysats
-  deterministicPassword: true
+  defaultPassword: $APP_SEED
   torOnly: false
-  releaseNotes: >-
-    This release fixes a minor UI bug for 0.6.0.
-
-    Release 0.6.0 enables ETHUSD CFDs. You can now trade BTCUSD and ETHUSD using your Bitcoin.
-
-    With release 0.6.0 support for the legacy network stack is dropped; versions prior to 0.5.4 are not supported anymore and have to upgrade to maintain compatibility.
+containers:
+  - name: itchysats
+    image: ghcr.io/itchysats/itchysats/taker:0.6.1@sha256:5ad0baea350bee41b6e828030ff37f7bb61359d381c7afd15f874ee2bf9d6c62
+    restart: on-failure
+    user: 1000:1000
+    port: 8000
+    stop_grace_period: 1m
+    volumes:
+      - data:/data
+    command:
+      - --password=$APP_PASSWORD
+      - --umbrel-seed=$APP_SEED
+      - $BITCOIN_NETWORK
+      - --electrum=tcp://$ELECTRUM_IP:$ELECTRUM_PORT
+    environment:
+      - ITCHYSATS_ENV=citadel
+      - APP_PASSWORD:=${APP_SEED}
